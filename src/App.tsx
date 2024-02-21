@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
 import { Grid, Typography } from '@mui/material';
+import AddItem from './components/AddItem';
 import EnhancedTable from './components/Datatable';
+
 
 const App = () => {
   return (
-    <Grid container spacing={3} alignItems="flex-start" justifyContent="center" style={{ margin: '5rem' }} direction="column">
+    <Grid container alignItems="flex-start" style={{ margin: '1rem' }} direction="column">
+      <Grid sx={{ alignSelf: "center" }} item>
+        <Typography variant="h5" >Menu Maker App</Typography>
+      </Grid>
       <Grid item>
-        <Typography variant="h5">Main Content</Typography>
+        <AddItem />
       </Grid>
       <Grid item>
         <EnhancedTable />
