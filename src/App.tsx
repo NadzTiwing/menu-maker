@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Grid, Typography } from '@mui/material';
 import AddItem from './components/AddItem';
-import EnhancedTable from './components/Datatable';
-
+import CardItems from './components/CardItems';
 
 const App = () => {
   return (
@@ -14,7 +13,7 @@ const App = () => {
         <AddItem />
       </Grid>
       <Grid item>
-        <EnhancedTable />
+        <CardItems />
       </Grid>
     </Grid>
   );

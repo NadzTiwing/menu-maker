@@ -5,6 +5,7 @@
   
   --primary: #10b981;
   --secondary: #34d399;
+  --muted: #a3a3a3;
 }
 
 .bg-primary {
@@ -25,4 +26,38 @@
 
 .text-white {
   color: white !important;
+}
+
+.text-muted {
+  color: var(--muted) !important;
+}
+
+.text-bold {
+  font-weight: bold;
+}
+
+.amount-details {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-item {
+  width: 90vw;
+  margin-top: 1rem;
+}
+
+/* desktops */
+@media (min-width: 769px) {
+  .card-item {
+    width: 40vw;
+  }
+}
+
+/* tablets */
+@media (min-width: 481px) and (max-width: 768px) {
+  .card-item {
+    width: 75vw;
+  }
 }
