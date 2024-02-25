@@ -40,7 +40,7 @@ const CategoriesSelection: React.FC<ICategoriesSelection> = ({
   return (
     <Autocomplete
       value={category}
-      onChange={(event, newValue) => {
+      onChange={(_event, newValue) => {
         handleSelect(newValue as ICategory);
       }}
       filterOptions={(options, params) => {
