@@ -5,7 +5,7 @@ import CardItems from './components/CardItems';
 
 const App = () => {
   return (
-    <Grid container alignItems="flex-start" style={{ margin: '1rem' }} direction="column">
+    <Grid container alignItems="center" style={{ margin: '1rem' }} direction="column">
       <Grid sx={{ alignSelf: "center" }} item>
         <Typography variant="h5" >Menu Maker App</Typography>
       </Grid>
