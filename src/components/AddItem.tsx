@@ -19,17 +19,14 @@ import {
   FormGroup,
   FormControlLabel,
   FormControl,
-  Button,
-  Snackbar,
+  Button
 } from "@mui/material";
-import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 import { ArrowDropDown } from "@mui/icons-material";
 import { generateId } from "../utils";
 import { ICategory, IAmount, IItemOption } from "../types";
 import ItemOptions from "./ItemOptions";
 import PopupMessage from "./PopupMessage";
-
-const filter = createFilterOptions<ICategory>();
+import CategoriesSelection from "./CategoriesSelection";
 
 const AddItem: React.FC = (): ReactElement => {
   const [category, setCategory] = useState<ICategory | null>(null);
@@ -46,6 +43,22 @@ const AddItem: React.FC = (): ReactElement => {
   const handleShowAlert = () => {
     setOpenAlert(!openAlert);
   };
+
+  const handleSelectCategory = (newValue: ICategory) => {
+    if (typeof newValue === "string") {
+      setCategory({
+        id: "new-category",
+        name: newValue,
+      });
+    } else if (newValue && newValue.name) {
+      setCategory({
+        id: newValue.id,
+        name: newValue.name,
+      });
+    } else {
+      setCategory(newValue);
+    }
+  }
 
   const handleAddOption = () => {
     const newOption = {
@@ -199,70 +212,7 @@ const AddItem: React.FC = (): ReactElement => {
         <Grid container direction="column" spacing={2}>
           <Grid item container direction="row" spacing={2}>
             <Grid item>
-              <Autocomplete
-                value={category}
-                onChange={(event, newValue) => {
-                  if (typeof newValue === "string") {
-                    setCategory({
-                      id: "new-category",
-                      name: newValue,
-                    });
-                  } else if (newValue && newValue.name) {
-                    setCategory({
-                      id: newValue.id,
-                      name: newValue.name,
-                    });
-                  } else {
-                    setCategory(newValue);
-                  }
-                }}
-                filterOptions={(options, params) => {
-                  const filtered = filter(options, params);
-
-                  const { inputValue } = params;
-                  // Suggest the creation of a new value
-                  const isExisting = options.some(
-                    (option) => inputValue === option.name
-                  );
-                  if (inputValue !== "" && !isExisting) {
-                    filtered.push({
-                      id: "new-category",
-                      name: inputValue,
-                    });
-                  }
-
-                  return filtered;
-                }}
-                selectOnFocus
-                clearOnBlur
-                handleHomeEndKeys
-                id="free-solo-with-text-demo"
-                options={categories}
-                getOptionLabel={(option) => {
-                  // Value selected with enter, right from the input
-                  if (typeof option === "string") {
-                    return option;
-                  }
-                  // Add "xxx" option created dynamically
-                  if (option.name) {
-                    return option.name;
-                  }
-                  // Regular option
-                  return option.name;
-                }}
-                renderOption={(props, option) => (
-                  <li {...props}>{option.name}</li>
-                )}
-                sx={{ width: 300 }}
-                freeSolo
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Select or Enter Category"
-                    required
-                  />
-                )}
-              />
+              <CategoriesSelection category={category} handleSelect={handleSelectCategory} />
             </Grid>
             <Grid item>
               <TextField
@@ -298,9 +248,10 @@ const AddItem: React.FC = (): ReactElement => {
           </Grid>
           {hasOptions ? (
             <Grid container item direction="column" gap={2}>
-              {options.map((item: IItemOption) => (
+              {options.map((item: IItemOption, index: number) => (
                 <ItemOptions
                   key={item.id}
+                  index={index}
                   id={item.id}
                   name={item.name}
                   cost={item.cost}

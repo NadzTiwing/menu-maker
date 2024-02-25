@@ -1,13 +1,9 @@
 import { Grid, TextField, Button } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { IItemOption } from "../types";
-
-interface IItemProps extends IItemOption {
-  handleChange: (id: string, type: string, value: string | number) => void;
-  handleRemove: (id: string) => void;
-}
+import { IItemProps } from "../types";
 
 const ItemOptions: React.FC<IItemProps> = ({
+  index,
   id,
   name,
   cost,
@@ -57,15 +53,17 @@ const ItemOptions: React.FC<IItemProps> = ({
           onChange={(event) => handleChange(id, "stock", Number(event.target.value))}
         />
       </Grid>
-      <Grid item>
-        <Button
-          variant="text"
-          sx={{ color: "lightgray", "&:hover": { color: "red" }  }}
-          onClick={() => handleRemove(id)}
-        >
-          <CloseIcon />
-        </Button>
-      </Grid>
+      {index != 0 && 
+        <Grid item>
+          <Button
+            variant="text"
+            sx={{ color: "lightgray", "&:hover": { color: "red" }  }}
+            onClick={() => handleRemove(id)}
+          >
+            <CloseIcon />
+          </Button>
+        </Grid>
+      }
     </Grid>
   );
 };

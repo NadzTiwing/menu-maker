@@ -4,12 +4,13 @@ import { getFirestore } from "firebase/firestore";
 import { IFirebaseConfig } from "../types";
 
 const firebaseConfig: IFirebaseConfig = {
-  apiKey: "AIzaSyCgxZanEhxUaduNLVZt8OlMJ6h5Nr0XSxo",
-  authDomain: "menu-maker-f6ac6.firebaseapp.com",
-  projectId: "menu-maker-f6ac6",
-  storageBucket: "menu-maker-f6ac6.appspot.com",
-  messagingSenderId: "472345358080",
-  appId: "1:472345358080:web:591901a0651bc3572f4de5"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY as string,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN as string,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID as string,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET as string,
+  messagingSenderId: import.meta.env
+    .VITE_FIREBASE_MESSAGING_SENDER_ID as string,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID as string,
 };
 
 // Initializations

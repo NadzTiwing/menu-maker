@@ -7,7 +7,6 @@ export interface IFirebaseConfig {
   appId: string,
 }
 
-
 export interface ICategory {
   id: string,
   name: string;
@@ -42,5 +41,16 @@ export interface IPopupMessage {
 export interface IEditModal {
   isOpen: boolean,
   handleShow: () => void,
-  id: string 
+  details: IItem | IItemWithOptions | null
+}
+
+export interface ICategoriesSelection {
+  category: ICategory | null,
+  handleSelect: ( newValue: ICategory) => void
+}
+
+export interface IItemProps extends IItemOption {
+  index: number,
+  handleChange: (id: string, type: string, value: string | number) => void;
+  handleRemove: (id: string) => void;
 }

@@ -12,12 +12,10 @@ import { db } from "../firebase";
 import {
   doc,
   getDoc,
-  updateDoc,
   collection,
   query,
   orderBy as orderByFS,
   onSnapshot,
-  DocumentReference,
   deleteDoc,
 } from "firebase/firestore";
 import { IItem, IItemWithOptions } from "../types";
@@ -29,7 +27,7 @@ const CardItems: React.FC = (): ReactElement => {
   const [isOpenAlert, setOpenAlert] = useState<boolean>(false);
   const [isOpenEditModal, setOpenEditModal] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
-  const [editItem, setEditItem] = useState<string>("");
+  const [editItem, setEditItem] = useState<IItem | IItemWithOptions | null>(null);
 
   const handleShowAlert = () => {
     setOpenAlert(!isOpenAlert);
@@ -47,8 +45,8 @@ const CardItems: React.FC = (): ReactElement => {
     setOpenEditModal(!isOpenEditModal);
   };
 
-  const handleEditItem = (itemId: string) => {
-    setEditItem(itemId);
+  const handleEditItem = (item: IItem | IItemWithOptions) => {
+    setEditItem(item);
     handleShowModal();
   };
 
@@ -90,7 +88,6 @@ const CardItems: React.FC = (): ReactElement => {
         })
       );
 
-      console.log("fetchedItems", fetchedItems);
       setItems(fetchedItems);
     });
 
@@ -102,9 +99,9 @@ const CardItems: React.FC = (): ReactElement => {
   return (
     <>
     <PopupMessage isOpen={isOpenAlert} handleShow={handleShowAlert} message={message}/>
-    <EditItemModal isOpen={isOpenEditModal} handleShow={handleShowModal} id={editItem}/>
+    <EditItemModal isOpen={isOpenEditModal} handleShow={handleShowModal} details={editItem}/>
       {items.map((item) => (
-        <Box key={item.id} className="card-item">
+        <Box key={`card-item-${item.id}`} className="card-item">
           <Card variant="outlined">
             <CardContent>
               <Grid
@@ -128,7 +125,7 @@ const CardItems: React.FC = (): ReactElement => {
                         color: "lightgray",
                         "&:hover": { color: "darkblue" },
                       }}
-                      onClick={()=>handleEditItem(item.id)}
+                      onClick={()=>handleEditItem(item)}
                     >
                       <ModeIcon />
                     </Button>
@@ -149,7 +146,7 @@ const CardItems: React.FC = (): ReactElement => {
               </Typography>
               {(item as IItemWithOptions).options ?
                 (item as IItemWithOptions).options.map((option) => (
-                  <Box className="amount-details">
+                  <Box key={option.id} className="amount-details">
                     <Typography variant="body1">
                       <span className="text-muted">Name:</span>{" "}
                       <span className="text-bold">{option.name}</span>
