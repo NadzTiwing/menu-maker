@@ -14,6 +14,7 @@ export interface ICategory {
 }
 
 export interface IAmount {
+  price: number,
   cost: number,
   stock: number,
 }

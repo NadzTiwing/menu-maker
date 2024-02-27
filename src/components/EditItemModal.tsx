@@ -16,7 +16,7 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: "55vw",
+  width: "70vw",
   bgcolor: "background.paper",
   border: "2px solid #000",
   boxShadow: 24,
@@ -29,6 +29,7 @@ const EditItemModal: React.FC<IEditModal> = ({
   details,
 }: IEditModal): ReactElement => {
   const [itemName, setItemName] = useState<string>("");
+  const [price, setPrice] = useState<number>(0);
   const [cost, setCost] = useState<number>(0);
   const [stock, setStock] = useState<number>(0);
   const [options, setOptions] = useState<IItemOption[]>(
@@ -94,6 +95,7 @@ const EditItemModal: React.FC<IEditModal> = ({
         : {
             name: itemName,
             categoryId: category?.id,
+            price: price,
             cost: cost,
             stock: stock,
           };
@@ -108,6 +110,7 @@ const EditItemModal: React.FC<IEditModal> = ({
     const newOption = {
       id: generateId(),
       name: "",
+      price: 0,
       cost: 0,
       stock: 0,
     };
@@ -118,6 +121,7 @@ const EditItemModal: React.FC<IEditModal> = ({
     const itemOptions = (details as IItemWithOptions)?.options;
     setItemName(details?.name || "");
     setCategory(details?.category);
+    setPrice(details?.price || 0);
     setCost(details?.cost || 0);
     setStock(details?.stock || 0);
     setOptions(itemOptions);
@@ -158,6 +162,7 @@ const EditItemModal: React.FC<IEditModal> = ({
                   index={index}
                   id={option.id}
                   name={option.name}
+                  price={option.price}
                   cost={option.cost}
                   stock={option.stock}
                   handleChange={handleChangeOption}
@@ -184,6 +189,17 @@ const EditItemModal: React.FC<IEditModal> = ({
               alignItems="center"
               justifyContent="space-between"
             >
+              <TextField
+                id="outlined-basic"
+                label="Price"
+                variant="outlined"
+                type="number"
+                inputProps={{
+                  min: 0,
+                }}
+                value={price}
+                onChange={(event) => setPrice(Number(event.target.value))}
+              />
               <TextField
                 id="outlined-basic"
                 label="Cost"

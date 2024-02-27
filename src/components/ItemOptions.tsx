@@ -6,6 +6,7 @@ const ItemOptions: React.FC<IItemProps> = ({
   index,
   id,
   name,
+  price,
   cost,
   stock,
   handleChange,
@@ -27,6 +28,18 @@ const ItemOptions: React.FC<IItemProps> = ({
           value={name}
           type="text"
           onChange={(event) => handleChange(id, "name", event.target.value)}
+        />
+      </Grid>
+      <Grid item>
+        <TextField
+          label="Price"
+          variant="outlined"
+          value={price}
+          type="number"
+          inputProps={{
+            min: 0,
+          }}
+          onChange={(event) => handleChange(id, "price", Number(event.target.value))}
         />
       </Grid>
       <Grid item>

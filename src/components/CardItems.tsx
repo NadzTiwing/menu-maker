@@ -77,6 +77,7 @@ const CardItems: React.FC = (): ReactElement => {
             id: itemId,
             name: itemsObj[key].name,
             category: category,
+            price: itemsObj[key].price,
             cost: Number(itemsObj[key].cost) || 0,
             stock: Number(itemsObj[key].stock) || 0,
           } as IItem; 
@@ -141,8 +142,12 @@ const CardItems: React.FC = (): ReactElement => {
                 (item as IItemWithOptions).options.map((option) => (
                   <Box key={option.id} className="amount-details">
                     <Typography variant="body1">
-                      <span className="text-muted">Name:</span>{" "}
+                      <span className="text-muted">Type:</span>{" "}
                       <span className="text-bold">{option.name}</span>
+                    </Typography>
+                    <Typography variant="body1">
+                      <span className="text-muted">Price:</span>{" "}
+                      <span className="text-bold">{option.price}</span>
                     </Typography>
                     <Typography variant="body1">
                       <span className="text-muted">Cost:</span>{" "}
@@ -156,6 +161,10 @@ const CardItems: React.FC = (): ReactElement => {
                 ))
               :
               (<Box className="amount-details">
+                <Typography variant="body1">
+                  <span className="text-muted">Price:</span>{" "}
+                  <span className="text-bold">{item.price}</span>
+                </Typography>
                 <Typography variant="body1">
                   <span className="text-muted">Cost:</span>{" "}
                   <span className="text-bold">{item.cost}</span>

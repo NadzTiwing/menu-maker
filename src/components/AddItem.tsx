@@ -25,10 +25,10 @@ const AddItem: React.FC = (): ReactElement => {
   const [category, setCategory] = useState<ICategory | null>(null);
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [name, setName] = useState<string>("");
-  const [amount, setAmount] = useState<IAmount>({ cost: 0, stock: 0 });
+  const [amount, setAmount] = useState<IAmount>({ price: 0, cost: 0, stock: 0 });
   const [hasOptions, setHasOptions] = useState<boolean>(false);
   const [options, setOptions] = useState<IItemOption[]>([
-    { id: "item-option-1", name: "", cost: 0, stock: 0 },
+    { id: "item-option-1", name: "", price: 0, cost: 0, stock: 0 },
   ]);
   const [openAlert, setOpenAlert] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
@@ -57,6 +57,7 @@ const AddItem: React.FC = (): ReactElement => {
     const newOption = {
       id: generateId(),
       name: "",
+      price: 0,
       cost: 0,
       stock: 0,
     };
@@ -141,6 +142,7 @@ const AddItem: React.FC = (): ReactElement => {
       const newItem = {
         categoryId: category.id,
         name,
+        price: amount.price,
         cost: amount.cost,
         stock: amount.stock,
       };
@@ -153,7 +155,7 @@ const AddItem: React.FC = (): ReactElement => {
 
     setName("");
     setCategory(null);
-    setAmount((amt) => ({ ...amt, cost: 0, stock: 0 }));
+    setAmount((amt) => ({ ...amt, price: 0, cost: 0, stock: 0 }));
     setOptions([]);
 
     setOpenAlert(true);
@@ -226,6 +228,7 @@ const AddItem: React.FC = (): ReactElement => {
                   index={index}
                   id={item.id}
                   name={item.name}
+                  price={item.price}
                   cost={item.cost}
                   stock={item.stock}
                   handleChange={handleChange}
@@ -254,6 +257,23 @@ const AddItem: React.FC = (): ReactElement => {
               spacing={2}
               alignItems="center"
             >
+              <Grid item>
+                <TextField
+                  label="Price"
+                  variant="outlined"
+                  value={amount.price}
+                  type="number"
+                  inputProps={{
+                    min: 0,
+                  }}
+                  onChange={(event) =>
+                    setAmount((prevAmt: IAmount) => ({
+                      ...prevAmt,
+                      price: Number(event.target.value),
+                    }))
+                  }
+                />
+              </Grid>
               <Grid item>
                 <TextField
                   label="Cost"
