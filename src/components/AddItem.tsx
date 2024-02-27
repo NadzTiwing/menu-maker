@@ -1,6 +1,6 @@
-import { ReactElement, useState, useEffect } from "react";
+import { ReactElement, useState } from "react";
 import { db } from "../firebase";
-import { ref, push, set, onValue } from "firebase/database";
+import { ref, push, set } from "firebase/database";
 import {
   Typography,
   Grid,

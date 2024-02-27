@@ -1,5 +1,4 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
 import { getDatabase } from "firebase/database";
 import { IFirebaseConfig } from "../types";
 
