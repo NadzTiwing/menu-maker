@@ -5,6 +5,7 @@ export interface IFirebaseConfig {
   storageBucket: string,
   messagingSenderId: string,
   appId: string,
+  databaseURL: string
 }
 
 export interface ICategory {

@@ -9,15 +9,7 @@ import Typography from "@mui/material/Typography";
 import ModeIcon from "@mui/icons-material/Mode";
 import CloseIcon from "@mui/icons-material/Close";
 import { db } from "../firebase";
-import {
-  doc,
-  getDoc,
-  collection,
-  query,
-  orderBy as orderByFS,
-  onSnapshot,
-  deleteDoc,
-} from "firebase/firestore";
+import { ref, onValue, remove } from "firebase/database";
 import { IItem, IItemWithOptions } from "../types";
 import PopupMessage from "./PopupMessage";
 import EditItemModal from "./EditItemModal";
@@ -28,6 +20,7 @@ const CardItems: React.FC = (): ReactElement => {
   const [isOpenEditModal, setOpenEditModal] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
   const [editItem, setEditItem] = useState<IItem | IItemWithOptions | null>(null);
+  const itemsRef = ref(db, "items/");
 
   const handleShowAlert = () => {
     setOpenAlert(!isOpenAlert);
@@ -35,7 +28,7 @@ const CardItems: React.FC = (): ReactElement => {
 
   const handleDeleteItem = async (itemId: string) => {
     if(confirm("Are you sure?")) {
-      await deleteDoc(doc(db, "items", itemId));
+      await remove(ref(db, 'items/' + itemId));
       setMessage("Successfully deleted!");
       setOpenAlert(true);
     }
@@ -50,50 +43,50 @@ const CardItems: React.FC = (): ReactElement => {
     handleShowModal();
   };
 
-  const getCategoryName = async (categoryId: string): Promise<any> => {
-    const categoriesRef = collection(db, "categories");
-    const categoryDocRef = doc(categoriesRef, categoryId);
-    const categoryDocSnapshot = await getDoc(categoryDocRef);
+  const getCategoryName = (categoryId: string): string => {
+    let name = "";
+    onValue(ref(db, "categories/" + categoryId), (snapshot) => {
+      const categoriesObj = snapshot.val() || {};
+      name = categoriesObj.name; 
+    });
 
-    if (categoryDocSnapshot.exists()) {
-      return categoryDocSnapshot.data().name;
-    }
-
-    return "";
+    return name || "";
   };
 
   useEffect(() => {
-    const fetchQuery = query(collection(db, "items"), orderByFS("name", "asc"));
 
-    const unsubscribe = onSnapshot(fetchQuery, async (QuerySnapshot) => {
-      const fetchedItems: IItem[] | IItemWithOptions[] = [];
-      const docsArray = QuerySnapshot.docs;
-      await Promise.all(
-        docsArray.map(async (doc) => {
-          try {
-            const categoryId = doc.data().categoryId;
-            const categoryName = await getCategoryName(categoryId);
-            const { cost, name, stock, options } = doc.data();
-            fetchedItems.push({
-              id: doc.id,
-              category: { name: categoryName, id: categoryId },
-              name,
-              cost,
-              stock,
-              options
-            });
-          } catch (error) {
-            console.error("Error fetching category name:", error);
-          }
-        })
-      );
+    onValue(itemsRef, (snapshot) => {
+      const itemsObj = snapshot.val() || {};
+      const itemsArray: IItem[] | IItemWithOptions = Object.keys(itemsObj).map((key) => {
+        const itemId = key as string;
+        const categoryId = itemsObj[key].categoryId as string;
+        const category = {
+          id: categoryId,
+          name: getCategoryName(categoryId) // Ensure this returns a string synchronously
+        };
+        
+        if (itemsObj[key].options) {
+          return {
+            id: itemId,
+            name: itemsObj[key].name,
+            category: category,
+            options: itemsObj[key].options || [],
+          } as IItemWithOptions;
+        } else { 
+          return {
+            id: itemId,
+            name: itemsObj[key].name,
+            category: category,
+            cost: Number(itemsObj[key].cost) || 0,
+            stock: Number(itemsObj[key].stock) || 0,
+          } as IItem; 
+        }
+      });
 
-      setItems(fetchedItems);
+      setItems(itemsArray);
     });
 
-    return () => {
-      unsubscribe;
-    };
+    
   }, []);
 
   return (

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { updateDoc, doc } from "firebase/firestore";
 import { db } from "../firebase";
+import { update, ref } from "firebase/database";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import { IEditModal } from "../types";
@@ -83,7 +83,8 @@ const EditItemModal: React.FC<IEditModal> = ({
   };
 
   const handleSave = async () => {
-    let udpatedData =
+    const itemId = details?.id || "";
+    const updatedData =
       options?.length > 0
         ? {
             name: itemName,
@@ -96,12 +97,9 @@ const EditItemModal: React.FC<IEditModal> = ({
             cost: cost,
             stock: stock,
           };
+          
+    update(ref(db, "items/" + itemId), updatedData || {});
 
-    if (details?.id) {
-      const docRef = doc(db, "items", details.id);
-      updateDoc(docRef, udpatedData);
-    }
-    
     // hide modal
     handleShow();
   };

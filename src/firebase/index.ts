@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getDatabase } from "firebase/database";
 import { IFirebaseConfig } from "../types";
 
 const firebaseConfig: IFirebaseConfig = {
@@ -11,9 +11,10 @@ const firebaseConfig: IFirebaseConfig = {
   messagingSenderId: import.meta.env
     .VITE_FIREBASE_MESSAGING_SENDER_ID as string,
   appId: import.meta.env.VITE_FIREBASE_APP_ID as string,
+  databaseURL: "https://menu-maker-f6ac6-default-rtdb.asia-southeast1.firebasedatabase.app"
 };
 
 // Initializations
 const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const db = getFirestore(app);
+// export const db = getFirestore(app);
+export const db = getDatabase(app);

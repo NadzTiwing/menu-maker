@@ -1,13 +1,6 @@
 import { ReactElement, useState, useEffect } from "react";
-import {
-  addDoc,
-  collection,
-  query,
-  orderBy,
-  onSnapshot,
-  DocumentReference,
-} from "firebase/firestore";
 import { db } from "../firebase";
+import { ref, push, set, onValue } from "firebase/database";
 import {
   Typography,
   Grid,
@@ -19,7 +12,7 @@ import {
   FormGroup,
   FormControlLabel,
   FormControl,
-  Button
+  Button,
 } from "@mui/material";
 import { ArrowDropDown } from "@mui/icons-material";
 import { generateId } from "../utils";
@@ -58,7 +51,7 @@ const AddItem: React.FC = (): ReactElement => {
     } else {
       setCategory(newValue);
     }
-  }
+  };
 
   const handleAddOption = () => {
     const newOption = {
@@ -89,10 +82,21 @@ const AddItem: React.FC = (): ReactElement => {
     setOptions(udpateOptions);
   };
 
-  const addNewCategory = async (name: string): Promise<DocumentReference> => {
-    const docRef = await addDoc(collection(db, "categories"), { name: name });
+  const addNewCategory = (name: string): string => {
+    let categoryId: string = "";
 
-    return docRef;
+    const categoryRef = push(ref(db, "categories"));
+    set(categoryRef, {
+      name,
+    })
+      .then(() => {
+        categoryId = categoryRef.key || "";
+      })
+      .catch((error) => {
+        console.error("Error adding an item: ", error);
+      });
+
+    return categoryId;
   };
 
   const handleAddItem = async () => {
@@ -113,12 +117,8 @@ const AddItem: React.FC = (): ReactElement => {
         setCategories(categories);
       }
     }
-    // else { // add new category
-    //   addNewCategory(category.name);
-    //   // await addDoc(collection(menuRef, categoryId), { name: categoryName} );
-    //   // localStorage.setItem("categories", JSON.stringify([category]));
-    // }
 
+    const newItemRef = push(ref(db, "items"));
     if (hasOptions) {
       const hasEmptyString = options.some((option) => option.name === "");
       if (options.length === 0 || hasEmptyString) {
@@ -134,17 +134,9 @@ const AddItem: React.FC = (): ReactElement => {
       };
 
       if (newItem.categoryId === "new-category") {
-        try {
-          const categoryDocRef = addNewCategory(category.name);
-          newItem.categoryId = (await categoryDocRef).id;
-
-          await addDoc(collection(db, "items"), newItem);
-        } catch (error) {
-          console.error("Error adding category:", error);
-        }
-      } else {
-        await addDoc(collection(db, "items"), newItem);
-      }
+        newItem.categoryId = addNewCategory(category.name);
+        set(newItemRef, newItem );
+      } else set(newItemRef, newItem );
     } else {
       const newItem = {
         categoryId: category.id,
@@ -154,17 +146,9 @@ const AddItem: React.FC = (): ReactElement => {
       };
 
       if (newItem.categoryId === "new-category") {
-        try {
-          const categoryDocRef = addNewCategory(category.name);
-          newItem.categoryId = (await categoryDocRef).id;
-
-          await addDoc(collection(db, "items"), newItem);
-        } catch (error) {
-          console.error("Error adding category:", error);
-        }
-      } else {
-        await addDoc(collection(db, "items"), newItem);
-      }
+        newItem.categoryId = addNewCategory(category.name);
+        set(newItemRef, newItem);
+      } else set(newItemRef, newItem);
     }
 
     setName("");
@@ -176,25 +160,6 @@ const AddItem: React.FC = (): ReactElement => {
     setMessage("Successfully added!");
   };
 
-  useEffect(() => {
-    const fetchQuery = query(
-      collection(db, "categories"),
-      orderBy("name", "asc")
-    );
-
-    const unsubscribe = onSnapshot(fetchQuery, async (QuerySnapshot) => {
-      const fetchedCategories: any = [];
-      QuerySnapshot.forEach((doc) => {
-        fetchedCategories.push({ ...doc.data(), id: doc.id });
-      });
-
-      setCategories(fetchedCategories);
-    });
-
-    return () => {
-      unsubscribe;
-    };
-  }, []);
 
   return (
     <Accordion>
@@ -208,11 +173,18 @@ const AddItem: React.FC = (): ReactElement => {
         </Typography>
       </AccordionSummary>
       <AccordionDetails>
-        <PopupMessage isOpen={openAlert} handleShow={handleShowAlert} message={message}/>
+        <PopupMessage
+          isOpen={openAlert}
+          handleShow={handleShowAlert}
+          message={message}
+        />
         <Grid container direction="column" spacing={2}>
           <Grid item container direction="row" spacing={2}>
             <Grid item>
-              <CategoriesSelection category={category} handleSelect={handleSelectCategory} />
+              <CategoriesSelection
+                category={category}
+                handleSelect={handleSelectCategory}
+              />
             </Grid>
             <Grid item>
               <TextField

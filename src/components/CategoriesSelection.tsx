@@ -1,11 +1,6 @@
-import { ReactElement, useState, useEffect } from "react";
-import {
-  collection,
-  query,
-  orderBy,
-  onSnapshot
-} from "firebase/firestore";
+import { ReactElement, useEffect, useState } from "react";
 import { db } from "../firebase";
+import { onValue, ref } from "firebase/database";
 import { ICategory, ICategoriesSelection } from "../types";
 import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 import { TextField } from "@mui/material";
@@ -17,24 +12,18 @@ const CategoriesSelection: React.FC<ICategoriesSelection> = ({
   handleSelect,
 }: ICategoriesSelection): ReactElement => {
   const [categories, setCategories] = useState<ICategory[]>([]);
+
+  const categoriesRef = ref(db, "categories/");
   useEffect(() => {
-    const fetchQuery = query(
-      collection(db, "categories"),
-      orderBy("name", "asc")
-    );
-
-    const unsubscribe = onSnapshot(fetchQuery, async (QuerySnapshot) => {
-      const fetchedCategories: any = [];
-      QuerySnapshot.forEach((doc) => {
-        fetchedCategories.push({ ...doc.data(), id: doc.id });
-      });
-
-      setCategories(fetchedCategories);
+    onValue(categoriesRef, (snapshot) => {
+      const categoriesObj = snapshot.val() || {};
+      const categoriesArray = Object.keys(categoriesObj).map((key) => ({
+        id: key,
+        ...categoriesObj[key],
+      }));
+      setCategories(categoriesArray);
     });
 
-    return () => {
-      unsubscribe;
-    };
   }, []);
 
   return (
